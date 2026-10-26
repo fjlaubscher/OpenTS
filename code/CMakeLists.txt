@@ -134,6 +134,11 @@ set(OPENTS_COMPILE_OPTIONS
 )
 endif()
 
+if(APPLE)
+	# The engine uses __declspec(property) for its field-style accessors.
+	list(APPEND OPENTS_COMPILE_OPTIONS -fdeclspec)
+endif()
+
 target_compile_options(OpenTS PRIVATE ${OPENTS_COMPILE_OPTIONS})
 
 #

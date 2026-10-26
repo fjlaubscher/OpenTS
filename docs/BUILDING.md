@@ -177,9 +177,9 @@ An unsupported macOS configure is available for Apple Silicon
 compiler-portability work. It uses Apple Clang and Ninja on arm64. It does
 not expand the supported build matrix or establish runtime behavior.
 
-The engine sources still include Win32 headers, and `code/startup.cpp` enters
-through `WinMain`. Configure finishes. The build stops on compile errors
-before a binary is linked.
+On Windows, `code/startup.cpp` enters through `WinMain`. On macOS it enters
+through `main`. Other engine sources still include Win32 headers. Configure
+finishes. The build stops on compile errors before a binary is linked.
 
 Install CMake and Ninja, then initialize the submodules if the `thirdparty/`
 directories are empty:
