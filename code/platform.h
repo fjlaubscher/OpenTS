@@ -29,6 +29,7 @@ using BOOL = int;
 using BYTE = std::uint8_t;
 using WORD = std::uint16_t;
 using DWORD = std::uint32_t;
+using COLORREF = DWORD;
 using LONG = std::int32_t;
 using ULONG = std::uint32_t;
 using LONGLONG = std::int64_t;
@@ -104,6 +105,123 @@ struct FILETIME
 #define MAX_PATH 260
 #endif
 
+#define IDOK 1
+#define IDCANCEL 2
+#define IDABORT 3
+#define IDRETRY 4
+#define IDIGNORE 5
+#define IDYES 6
+#define IDNO 7
+
+#define FILE_ATTRIBUTE_READONLY 0x00000001
+#define FILE_ATTRIBUTE_HIDDEN 0x00000002
+#define FILE_ATTRIBUTE_SYSTEM 0x00000004
+#define FILE_ATTRIBUTE_DIRECTORY 0x00000010
+#define FILE_ATTRIBUTE_ARCHIVE 0x00000020
+#define FILE_ATTRIBUTE_NORMAL 0x00000080
+#define FILE_ATTRIBUTE_TEMPORARY 0x00000100
+#define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
+#define INVALID_HANDLE_VALUE ((HANDLE)(intptr_t)-1)
+
+#define LOWORD(value) ((WORD)((DWORD_PTR)(value) & 0xFFFF))
+#define HIWORD(value) ((WORD)(((DWORD_PTR)(value) >> 16) & 0xFFFF))
+#define RGB(red, green, blue) ((DWORD)(((BYTE)(red)) | ((WORD)((BYTE)(green)) << 8) | ((DWORD)((BYTE)(blue)) << 16)))
+
+#define VK_SHIFT 0x10
+#define VK_CONTROL 0x11
+#define VK_MENU 0x12
+#define VK_LSHIFT 0xA0
+#define VK_RSHIFT 0xA1
+#define VK_LCONTROL 0xA2
+#define VK_RCONTROL 0xA3
+#define VK_LMENU 0xA4
+#define VK_RMENU 0xA5
+
 #define CALLBACK
 #define WINAPI
 #define APIENTRY
+
+struct WIN32_FIND_DATAA
+{
+	DWORD dwFileAttributes;
+	FILETIME ftCreationTime;
+	FILETIME ftLastAccessTime;
+	FILETIME ftLastWriteTime;
+	DWORD nFileSizeHigh;
+	DWORD nFileSizeLow;
+	DWORD dwReserved0;
+	DWORD dwReserved1;
+	char cFileName[MAX_PATH];
+	char cAlternateFileName[14];
+};
+
+struct SYSTEMTIME
+{
+	WORD wYear;
+	WORD wMonth;
+	WORD wDayOfWeek;
+	WORD wDay;
+	WORD wHour;
+	WORD wMinute;
+	WORD wSecond;
+	WORD wMilliseconds;
+};
+
+union LARGE_INTEGER
+{
+	struct
+	{
+		DWORD LowPart;
+		LONG HighPart;
+	};
+	std::int64_t QuadPart;
+};
+
+inline int CompareFileTime(FILETIME const * left, FILETIME const * right)
+{
+	unsigned long long const a = ((unsigned long long)left->dwHighDateTime << 32) | left->dwLowDateTime;
+	unsigned long long const b = ((unsigned long long)right->dwHighDateTime << 32) | right->dwLowDateTime;
+	if (a < b) return(-1);
+	if (a > b) return(1);
+	return(0);
+}
+
+HANDLE FindFirstFileA(char const * pattern, WIN32_FIND_DATAA * found);
+HANDLE FindFirstFile(char const * pattern, WIN32_FIND_DATAA * found);
+int FindNextFileA(HANDLE handle, WIN32_FIND_DATAA * found);
+int FindNextFile(HANDLE handle, WIN32_FIND_DATAA * found);
+int FindClose(HANDLE handle);
+
+#include <arpa/inet.h>
+#include <chrono>
+#include <cstring>
+#include <strings.h>
+#include <unistd.h>
+
+#ifdef stricmp
+#undef stricmp
+#endif
+#ifdef _stricmp
+#undef _stricmp
+#endif
+
+inline void Sleep(DWORD milliseconds)
+{
+	usleep((useconds_t)milliseconds * 1000u);
+}
+
+inline DWORD timeGetTime(void)
+{
+	auto const now = std::chrono::steady_clock::now().time_since_epoch();
+	return((DWORD)std::chrono::duration_cast<std::chrono::milliseconds>(now).count());
+}
+
+inline int stricmp(char const * left, char const * right)
+{
+	return(strcasecmp(left == nullptr ? "" : left, right == nullptr ? "" : right));
+}
+
+inline int _stricmp(char const * left, char const * right)
+{
+	return(stricmp(left, right));
+}

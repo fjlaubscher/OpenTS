@@ -206,9 +206,11 @@
 #include "scrnsel.hh"
 
 #include <algorithm>
+#if defined(_WIN32)
 #include <conio.h>
-#include <ctime>
 #include <dos.h>
+#endif
+#include <ctime>
 #include <string>
 #include <unordered_set>
 #include <vector>

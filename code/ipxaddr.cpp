@@ -46,7 +46,9 @@
 
 #include <cstdio>
 #include <cstring>
+#if defined(_WIN32)
 #include <winsock.h>
+#endif
 
 
 /***************************************************************************

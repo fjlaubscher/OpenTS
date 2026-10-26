@@ -36,7 +36,9 @@
 #include "winstub.h"
 #include "wwmouse.h"
 
+#if defined(_WIN32)
 #include <commctrl.h>
+#endif
 
 
 static bool _HandlingMouseWheel = false;
