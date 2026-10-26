@@ -178,8 +178,9 @@ compiler-portability work. It uses Apple Clang and Ninja on arm64. It does
 not expand the supported build matrix or establish runtime behavior.
 
 On Windows, `code/startup.cpp` enters through `WinMain`. On macOS it enters
-through `main`. Other engine sources still include Win32 headers. Configure
-finishes. The build stops on compile errors before a binary is linked.
+through `main`. Configure finishes. The Debug build links
+`build/macos/bin/GameD`. Its strings come from the `STRINGTABLE` entries in
+`code/language/language.rc`.
 
 Install CMake and Ninja, then initialize the submodules if the `thirdparty/`
 directories are empty:
@@ -208,7 +209,11 @@ cmake --build build/macos-release
 
 The test tree is added only for a Windows configure, so this build reports the
 game target. The configure writes `compile_commands.json` into the build
-directory.
+directory. Point `-DATADIR=` at a Tiberian Sun data directory:
+
+```bash
+build/macos/bin/GameD -DATADIR=/path/to/tibsun
+```
 
 ## Build from Visual Studio Code
 

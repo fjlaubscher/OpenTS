@@ -137,6 +137,23 @@ endif()
 if(APPLE)
 	# The engine uses __declspec(property) for its field-style accessors.
 	list(APPEND OPENTS_COMPILE_OPTIONS -fdeclspec)
+
+	# Language.dll is a Windows resource library. The Mac build reads the same string table
+	# from the generated translation unit.
+	set(OPENTS_LANGUAGE_STRINGS "${CMAKE_CURRENT_BINARY_DIR}/language_strings.cpp")
+	add_custom_command(
+		OUTPUT "${OPENTS_LANGUAGE_STRINGS}"
+		COMMAND python3 "${CMAKE_CURRENT_SOURCE_DIR}/language/extract_strings.py"
+			"${CMAKE_CURRENT_SOURCE_DIR}/language/language.h"
+			"${CMAKE_CURRENT_SOURCE_DIR}/language/language.rc"
+			"${OPENTS_LANGUAGE_STRINGS}"
+		DEPENDS
+			"${CMAKE_CURRENT_SOURCE_DIR}/language/extract_strings.py"
+			"${CMAKE_CURRENT_SOURCE_DIR}/language/language.h"
+			"${CMAKE_CURRENT_SOURCE_DIR}/language/language.rc"
+		VERBATIM
+	)
+	target_sources(OpenTS PRIVATE "${OPENTS_LANGUAGE_STRINGS}")
 endif()
 
 target_compile_options(OpenTS PRIVATE ${OPENTS_COMPILE_OPTIONS})

@@ -55,13 +55,6 @@ Uint32 _CaptureCancelled = 0;
 Uint32 _ModalLoopEnded = 0;
 #if !defined(_WIN32)
 bool _RepaintRequested = false;
-
-// Mouse buttons use the virtual-key values keyboard.h and the Windows header share.
-constexpr int VK_LBUTTON = 0x01;
-constexpr int VK_RBUTTON = 0x02;
-constexpr int VK_MBUTTON = 0x04;
-constexpr int VK_XBUTTON1 = 0x05;
-constexpr int VK_XBUTTON2 = 0x06;
 #endif
 #if defined(__APPLE__)
 int System_Double_Click_Ms(void)

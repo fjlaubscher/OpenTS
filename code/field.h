@@ -34,6 +34,9 @@
 
 #if defined(_WIN32)
 #include <winsock.h>
+#else
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #endif
 
 #define FIELD_HEADER_SIZE	(sizeof(FieldClass) - (sizeof(void *) * 2))

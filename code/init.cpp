@@ -1748,7 +1748,7 @@ void Init_Random(void)
 	*/
 	if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
 
-	#ifdef WIN32
+	#if defined(_WIN32) || defined(__APPLE__)
 		/*
 		**	Gather some "random" bits from the system timer. Actually, only the
 		**	low order millisecond bits are secure. The other bits could be
