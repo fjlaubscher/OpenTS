@@ -94,6 +94,12 @@ struct SIZE
 	LONG cy;
 };
 
+struct FILETIME
+{
+	DWORD dwLowDateTime;
+	DWORD dwHighDateTime;
+};
+
 #ifndef MAX_PATH
 #define MAX_PATH 260
 #endif
