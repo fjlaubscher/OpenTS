@@ -171,6 +171,45 @@ The toolchain requires `clang-cl`, `lld-link`, `llvm-lib`, `llvm-mt`, and
 `llvm-rc` on `PATH`. It exports `compile_commands.json`; one configuration in
 `.vscode/c_cpp_properties.clang.example.json` reads that file for IntelliSense.
 
+## Experimental Apple Silicon configure
+
+An unsupported macOS configure is available for Apple Silicon
+compiler-portability work. It uses Apple Clang and Ninja on arm64. It does
+not expand the supported build matrix or establish runtime behavior.
+
+The engine sources still include Win32 headers, and `code/startup.cpp` enters
+through `WinMain`. Configure finishes. The build stops on compile errors
+before a binary is linked.
+
+Install CMake and Ninja, then initialize the submodules if the `thirdparty/`
+directories are empty:
+
+```bash
+brew install cmake ninja
+git submodule update --init --recursive
+```
+
+Configure a single-configuration Ninja build from the repository root. Debug
+and Release each need their own directory:
+
+```bash
+cmake -S . -B build/macos -G Ninja \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build/macos
+```
+
+```bash
+cmake -S . -B build/macos-release -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build/macos-release
+```
+
+The test tree is added only for a Windows configure, so this build reports the
+game target. The configure writes `compile_commands.json` into the build
+directory.
+
 ## Build from Visual Studio Code
 
 With the recommended extensions installed, the repository provides:
