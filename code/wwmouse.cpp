@@ -93,6 +93,12 @@ static int Cursor_Scale(void)
 	VideoScaleInfo const & scale = Video_Get_Scale_Info();
 	float smaller = scale.ScaleX < scale.ScaleY ? scale.ScaleX : scale.ScaleY;
 
+	// The frame scale is in physical pixels. The cursor image is in window points.
+	float const density = Main_Window_Pixel_Density();
+	if (density > 1.0f) {
+		smaller /= density;
+	}
+
 	int result = (int)(smaller + 0.5f);
 	if (result < 1) result = 1;
 	if (result > 8) result = 8;

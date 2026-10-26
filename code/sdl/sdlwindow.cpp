@@ -67,6 +67,24 @@ int System_Double_Click_Ms(void)
 	}
 	return((int)std::lround(seconds * 1000.0));
 }
+
+
+// A launch from Terminal is not the foreground app, so the window stays behind it and startup never sees the focus it waits for.
+void Order_Window_Front(void)
+{
+	using SendBool = void (*)(id, SEL, BOOL);
+	using SendId = void (*)(id, SEL, id);
+	id const app = ((id (*)(id, SEL))objc_msgSend)((id)objc_getClass("NSApplication"), sel_registerName("sharedApplication"));
+	((SendBool)objc_msgSend)(app, sel_registerName("activateIgnoringOtherApps:"), YES);
+
+	if (_Window == nullptr) {
+		return;
+	}
+	id const window = (id)SDL_GetPointerProperty(SDL_GetWindowProperties(_Window), SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
+	if (window != nullptr) {
+		((SendId)objc_msgSend)(window, sel_registerName("makeKeyAndOrderFront:"), nil);
+	}
+}
 #endif
 #if defined(_WIN32)
 UINT_PTR const WindowSubclass = 2;
@@ -114,6 +132,8 @@ void Set_Hints(void)
 	Set_Hint(SDL_HINT_MOUSE_DOUBLE_CLICK_TIME, (int)GetDoubleClickTime());
 	Set_Hint(SDL_HINT_MOUSE_DOUBLE_CLICK_RADIUS, GetSystemMetrics(SM_CXDOUBLECLK) / 2);
 #elif defined(__APPLE__)
+	// macOS 14 leaves a terminal launch in the background unless this is set before SDL starts.
+	Set_Hint(SDL_HINT_MAC_BACKGROUND_APP, "0");
 	Set_Hint(SDL_HINT_MOUSE_DOUBLE_CLICK_TIME, System_Double_Click_Ms());
 	// macOS has no system double-click distance. 2 is the Windows default.
 	Set_Hint(SDL_HINT_MOUSE_DOUBLE_CLICK_RADIUS, 2);
@@ -459,6 +479,9 @@ bool Main_Window_Create(bool windowed, int width, int height, MainWindowIcon con
 	if (!_Unattended) {
 		SDL_ShowWindow(_Window);
 		SDL_RaiseWindow(_Window);
+#if defined(__APPLE__)
+		Order_Window_Front();
+#endif
 	}
 
 	// Typed text is always on, as characters from Windows were.
@@ -736,6 +759,12 @@ bool Main_Window_Key_Toggled(int virtualkey)
 std::string Main_Window_Key_Name(int virtualkey)
 {
 	return(Virtual_Key_Name(virtualkey));
+}
+
+
+float Main_Window_Pixel_Density(void)
+{
+	return(Pixel_Density());
 }
 
 

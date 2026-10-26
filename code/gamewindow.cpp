@@ -268,9 +268,7 @@ bool Game_Window_Open(int width, int height)
 		return(false);
 	}
 
-#if defined(_WIN32)
 	MainWindow = (HWND)Main_Window_Native().Handle;
-#endif
 
 	ToolTips = new CCToolTip();
 	ToolTips->Set_Timer_Delay(500);
