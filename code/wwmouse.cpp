@@ -93,11 +93,14 @@ static int Cursor_Scale(void)
 	VideoScaleInfo const & scale = Video_Get_Scale_Info();
 	float smaller = scale.ScaleX < scale.ScaleY ? scale.ScaleX : scale.ScaleY;
 
-	// The frame scale is in physical pixels. The cursor image is in window points.
+#if defined(__APPLE__)
+	// The frame scale is in physical pixels; the cursor image is in window points, and
+	// macOS draws the cursor at the window's pixel density.
 	float const density = Main_Window_Pixel_Density();
 	if (density > 1.0f) {
 		smaller /= density;
 	}
+#endif
 
 	int result = (int)(smaller + 0.5f);
 	if (result < 1) result = 1;

@@ -79,7 +79,9 @@ def cpp_literal(text):
         elif 32 <= byte < 127:
             parts.append(character)
         else:
-            parts.append("\\x%02x" % byte)
+            # Octal escapes end after three digits, unlike \x, which would swallow a
+            # following hex digit and corrupt the byte that comes after.
+            parts.append("\\%03o" % byte)
     parts.append('"')
     return "".join(parts)
 

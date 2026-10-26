@@ -173,6 +173,17 @@ float Pixel_Density(void)
 }
 
 
+// On macOS the size is already the window's point size. Elsewhere it is a pixel size.
+static int Client_Points(int size)
+{
+#if defined(__APPLE__)
+	return(size);
+#else
+	return((int)std::lround(size / Pixel_Density()));
+#endif
+}
+
+
 void Dispatch(WindowEvent const & event)
 {
 	if (event.Type == WINDOW_EVENT_FOCUS_GAINED) {
@@ -448,9 +459,8 @@ bool Main_Window_Create(bool windowed, int width, int height, MainWindowIcon con
 	}
 
 	if (windowed) {
-		float const density = Pixel_Density();
-		int const clientwidth = (int)std::lround(width / density);
-		int const clientheight = (int)std::lround(height / density);
+		int const clientwidth = Client_Points(width);
+		int const clientheight = Client_Points(height);
 		SDL_SetWindowSize(_Window, clientwidth, clientheight);
 
 		int top = 0;
@@ -541,9 +551,8 @@ void Main_Window_Resize(int width, int height)
 		return;
 	}
 
-	float const density = Pixel_Density();
-	int const newwidth = (int)std::lround(width / density);
-	int const newheight = (int)std::lround(height / density);
+	int const newwidth = Client_Points(width);
+	int const newheight = Client_Points(height);
 
 	int x = 0;
 	int y = 0;
@@ -592,15 +601,27 @@ std::vector<std::pair<int, int>> Main_Window_Fullscreen_Sizes(void)
 	}
 
 	int count = 0;
-	SDL_DisplayMode ** modes = SDL_GetFullscreenDisplayModes(SDL_GetPrimaryDisplay(), &count);
+	SDL_DisplayID const display = SDL_GetPrimaryDisplay();
+	SDL_DisplayMode ** modes = SDL_GetFullscreenDisplayModes(display, &count);
 	if (modes == nullptr) {
 		DebugString("SDL: the display modes were not listed: %s\n", SDL_GetError());
 		return(sizes);
 	}
 
+#if defined(__APPLE__)
+	// A mode is either pixels or points. Dividing the pixel size by the screen density lists the point size.
+	SDL_DisplayMode const * desktop = SDL_GetCurrentDisplayMode(display);
+	float const screen = (desktop != nullptr && desktop->pixel_density > 0.0f) ? desktop->pixel_density : 1.0f;
+#endif
+
 	for (int index = 0; index < count; index++) {
 		float const density = modes[index]->pixel_density > 0.0f ? modes[index]->pixel_density : 1.0f;
-		sizes.emplace_back((int)std::lround(modes[index]->w * density), (int)std::lround(modes[index]->h * density));
+#if defined(__APPLE__)
+		float const scale = density / screen;
+#else
+		float const scale = density;
+#endif
+		sizes.emplace_back((int)std::lround(modes[index]->w * scale), (int)std::lround(modes[index]->h * scale));
 	}
 	SDL_free(modes);
 

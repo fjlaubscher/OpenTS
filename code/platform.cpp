@@ -122,15 +122,16 @@ std::unordered_map<void *, ArgumentList *> & Argument_Map(void)
 
 std::mutex & Allocation_Lock(void)
 {
-	static std::mutex lock;
-	return(lock);
+	// Left allocated so exit can still lock it. A function-local static is destroyed before atexit runs.
+	static std::mutex * lock = new std::mutex;
+	return(*lock);
 }
 
 
 std::unordered_map<void *, Allocation> & Allocation_Map(void)
 {
-	static std::unordered_map<void *, Allocation> allocations;
-	return(allocations);
+	static auto * allocations = new std::unordered_map<void *, Allocation>;
+	return(*allocations);
 }
 
 HANDLE StandardHandles[3] = { nullptr, nullptr, nullptr };
@@ -200,10 +201,8 @@ char const * Open_Mode(DWORD access, DWORD disposition)
 	bool const write = (access & GENERIC_WRITE) != 0;
 	if (disposition == CREATE_NEW) return(read ? "w+bx" : "wbx");
 	if (disposition == CREATE_ALWAYS || disposition == TRUNCATE_EXISTING) return(read ? "w+b" : "wb");
-	if (disposition == OPEN_ALWAYS) return(read || !write ? "a+b" : "a+b");
-	if (read && write) return("r+b");
-	if (write) return("r+b");
-	return("rb");
+	// OPEN_ALWAYS is resolved by CreateFileA before this function is reached.
+	return(write ? "r+b" : "rb");
 }
 
 
@@ -1470,41 +1469,54 @@ wchar_t * CharUpperW(wchar_t * text)
 
 int WideCharToMultiByte(UINT, DWORD, wchar_t const * wide, int wide_count, char * buffer, int buffer_size, char const *, int *)
 {
-	if (wide == nullptr || buffer == nullptr || buffer_size <= 0) return(0);
-	if (wide_count < 0) {
+	if (wide == nullptr) return(0);
+
+	bool const terminated = wide_count < 0;
+	if (terminated) {
 		wide_count = 0;
 		while (wide[wide_count] != L'\0') wide_count++;
 	}
-	int written = 0;
+
+	std::string encoded;
+	encoded.reserve((std::size_t)wide_count * 4);
 	for (int index = 0; index < wide_count; index++) {
-		unsigned int code = (unsigned int)wide[index];
-		char encoded[4];
+		unsigned int const code = (unsigned int)wide[index];
+		char bytes[4];
 		int count = 0;
 		if (code < 0x80) {
-			encoded[0] = (char)code;
+			bytes[0] = (char)code;
 			count = 1;
 		} else if (code < 0x800) {
-			encoded[0] = (char)(0xC0 | (code >> 6));
-			encoded[1] = (char)(0x80 | (code & 0x3F));
+			bytes[0] = (char)(0xC0 | (code >> 6));
+			bytes[1] = (char)(0x80 | (code & 0x3F));
 			count = 2;
 		} else if (code < 0x10000) {
-			encoded[0] = (char)(0xE0 | (code >> 12));
-			encoded[1] = (char)(0x80 | ((code >> 6) & 0x3F));
-			encoded[2] = (char)(0x80 | (code & 0x3F));
+			bytes[0] = (char)(0xE0 | (code >> 12));
+			bytes[1] = (char)(0x80 | ((code >> 6) & 0x3F));
+			bytes[2] = (char)(0x80 | (code & 0x3F));
 			count = 3;
 		} else {
-			encoded[0] = (char)(0xF0 | (code >> 18));
-			encoded[1] = (char)(0x80 | ((code >> 12) & 0x3F));
-			encoded[2] = (char)(0x80 | ((code >> 6) & 0x3F));
-			encoded[3] = (char)(0x80 | (code & 0x3F));
+			bytes[0] = (char)(0xF0 | (code >> 18));
+			bytes[1] = (char)(0x80 | ((code >> 12) & 0x3F));
+			bytes[2] = (char)(0x80 | ((code >> 6) & 0x3F));
+			bytes[3] = (char)(0x80 | (code & 0x3F));
 			count = 4;
 		}
-		if (written + count >= buffer_size) break;
-		std::memcpy(buffer + written, encoded, (std::size_t)count);
-		written += count;
+		encoded.append(bytes, (std::size_t)count);
 	}
-	buffer[written] = '\0';
-	return(written);
+
+	// A NULL buffer asks for the required size, including the terminator a negative
+	// count requests, without writing.
+	if (buffer == nullptr) {
+		return((int)encoded.size() + (terminated ? 1 : 0));
+	}
+	if (buffer_size <= 0) return(0);
+
+	std::size_t const limit = (std::size_t)buffer_size - 1;
+	std::size_t const copy = encoded.size() < limit ? encoded.size() : limit;
+	std::memcpy(buffer, encoded.data(), copy);
+	buffer[copy] = '\0';
+	return((int)copy);
 }
 
 

@@ -683,9 +683,12 @@ int main(int argc, char ** supplied_argv)
 			Options.ScreenHeight = 480;
 		}
 
-		VisibleRect = Rect(0, 0, Options.ScreenWidth, Options.ScreenHeight);
-		VideoModeWidth = Options.ScreenWidth;
-		VideoModeHeight = Options.ScreenHeight;
+		int framewidth = Options.ScreenWidth;
+		int frameheight = Options.ScreenHeight;
+		Video_Frame_Size(Options.ScreenWidth, Options.ScreenHeight, framewidth, frameheight);
+		VisibleRect = Rect(0, 0, framewidth, frameheight);
+		VideoModeWidth = framewidth;
+		VideoModeHeight = frameheight;
 
 		if (!Game_Window_Open(Options.ScreenWidth, Options.ScreenHeight)) {
 			Main_Window_Error_Box(Fetch_String(TXT_SHORT_TITLE), Fetch_String(TXT_VIDEO_ERROR));
