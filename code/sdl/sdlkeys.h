@@ -9,7 +9,13 @@
 
 #pragma once
 
+#if defined(_WIN32)
 #include "win.h"
+#else
+// The Windows headers name this handle HKL. Callers pass null for the current layout.
+struct HKL__;
+using HKL = HKL__ *;
+#endif
 
 #include <SDL3/SDL_keyboard.h>
 

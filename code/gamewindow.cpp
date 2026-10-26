@@ -242,7 +242,9 @@ void Game_Window_Handle_Event(WindowEvent const & event)
 /// <returns>False when SDL could not start or the window could not be created.</returns>
 bool Game_Window_Open(int width, int height)
 {
+#if defined(_WIN32)
 	InitCommonControls();
+#endif
 
 	int clientwidth = width;
 	int clientheight = height;
@@ -264,7 +266,9 @@ bool Game_Window_Open(int width, int height)
 		return(false);
 	}
 
+#if defined(_WIN32)
 	MainWindow = (HWND)Main_Window_Native().Handle;
+#endif
 
 	ToolTips = new CCToolTip();
 	ToolTips->Set_Timer_Delay(500);
