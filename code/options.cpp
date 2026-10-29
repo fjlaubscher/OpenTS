@@ -131,7 +131,6 @@ OptionsClass::OptionsClass(void) :
 	TextBackgroundColor(0),
 	DoubleClickSelectType(true),
 	CampaignIntroMovie(true),
-	TransparentMessageText(true),
 	AutoSaveInterval(10800),
 	ScreenWidth(-1),
 	ScreenHeight(-1),
@@ -423,14 +422,7 @@ void OptionsClass::Load_Settings(void)
 	CampaignIntroMovie = ConfigINI.Get_Bool("siliconsun", "CampaignIntroMovie", CampaignIntroMovie);
 	DebugString("CampaignIntroMovie is %s\n", CampaignIntroMovie == true ? "ON" : "OFF");
 
-	TransparentMessageText = ConfigINI.Get_Bool("siliconsun", "TransparentMessageText", TransparentMessageText);
-	DebugString("TransparentMessageText is %s\n", TransparentMessageText == true ? "ON" : "OFF");
-
 	TextBackgroundColor = ConfigINI.Get_Int("Options", "TextBackgroundColor", TextBackgroundColor);
-	// Zero is the transparent default. With the feature off, that value is the black box again.
-	if (!TransparentMessageText && TextBackgroundColor == 0) {
-		TextBackgroundColor = 12;
-	}
 	DebugString("TextBackgroundColor = %d\n", TextBackgroundColor);
 
 	AutoSaveInterval = ConfigINI.Get_Int("Options", "AutoSaveInterval", AutoSaveInterval);
@@ -511,7 +503,6 @@ void OptionsClass::Save_Settings (void)
 	ConfigINI.Put_Bool("Options", "SimulateWhileUnfocused", SimulateWhileUnfocused);
 	ConfigINI.Put_Bool("siliconsun", "DoubleClickSelectType", DoubleClickSelectType);
 	ConfigINI.Put_Bool("siliconsun", "CampaignIntroMovie", CampaignIntroMovie);
-	ConfigINI.Put_Bool("siliconsun", "TransparentMessageText", TransparentMessageText);
 	ConfigINI.Put_Int("Options", "TextBackgroundColor", TextBackgroundColor);
 	ConfigINI.Put_Int("Options", "AutoSaveInterval", AutoSaveInterval);
 	ConfigINI.Put_Int("Video", "ScreenWidth", ScreenWidth);

@@ -79,7 +79,6 @@ writes the section back out.
 [siliconsun]
 DoubleClickSelectType=yes
 CampaignIntroMovie=yes
-TransparentMessageText=yes
 ```
 
 `DoubleClickSelectType=yes` selects every on-screen unit of one type when you
@@ -96,12 +95,15 @@ are installed. `no` leaves the movie archives in alphabetical order, and
 `INTRO.VQA` then comes from the first of those archives. A file named
 `INTR<n>.VQA` still plays for side `n` when it is present.
 
-`TransparentMessageText=yes` draws the in-game message list with no background
-while `TextBackgroundColor` under `[Options]` is missing or `0`. `no` draws
-palette index `12`, black, in that case. Any other `TextBackgroundColor` is
-used as written. After a save has stored the black box, set
-`TransparentMessageText=yes` and `TextBackgroundColor=0` to make the list
-transparent again.
+In-game messages have no background when `TextBackgroundColor` under
+`[Options]` is missing or `0`. Any other palette index is drawn as written.
+`12` is black. A saved `SUN.INI` that still has `TextBackgroundColor=12` keeps
+that black box; set it to `0`.
+
+```ini
+[Options]
+TextBackgroundColor=0
+```
 
 ## Playing on a Steam Deck
 

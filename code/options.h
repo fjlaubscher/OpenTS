@@ -157,12 +157,6 @@ class OptionsClass {
 		bool CampaignIntroMovie;
 
 		/*
-		 * If in-game messages keep a transparent background while TextBackgroundColor is zero,
-		 * then this flag will be true. Clearing it draws palette index twelve, black, instead.
-		 */
-		bool TransparentMessageText;
-
-		/*
 		 * Frames between automatic saves of a game started from the menu, or zero for none.
 		 * A launch file's own interval takes its place.
 		 */

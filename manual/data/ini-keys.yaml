@@ -24406,24 +24406,6 @@ Translucent50State:
       source: code/ptype.cpp
       guard: null
     level: ParticleTypeClass
-TransparentMessageText:
-  key: TransparentMessageText
-  scopes:
-  - applies_to:
-    - client settings
-    file: sun.ini
-    section:
-      kind: literal
-      name: siliconsun
-    value_type: boolean
-    status: generated
-    _provenance:
-      default_candidate: 'yes'
-      declared_in: OptionsClass
-      member: TransparentMessageText
-      source: code/options.cpp
-      guard: null
-    level: OptionsClass
 TransportsReturnOnUnload:
   key: TransportsReturnOnUnload
   scopes:

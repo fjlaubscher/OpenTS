@@ -9,9 +9,6 @@ targets:
 - type: key
   id: CampaignIntroMovie
   effect: added
-- type: key
-  id: TransparentMessageText
-  effect: added
 credit:
 - fjlaubscher
 ---
@@ -19,5 +16,3 @@ credit:
 `DoubleClickSelectType=no` under `[siliconsun]` in `SUN.INI` leaves a double-click as an ordinary click. `yes` selects every on-screen unit of the double-clicked unit's type.
 
 `CampaignIntroMovie=no` under the same section leaves the movie archives in alphabetical order. `yes` plays a campaign introduction from that campaign's movie archive.
-
-`TransparentMessageText=no` draws the in-game message list on a black box when `TextBackgroundColor` is missing or `0`. `yes` draws that list with no background.
