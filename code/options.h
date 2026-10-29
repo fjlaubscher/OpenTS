@@ -145,6 +145,24 @@ class OptionsClass {
 		int TextBackgroundColor;
 
 		/*
+		 * If a double-click on one of the player's own units selects every on-screen unit of
+		 * its type, then this flag will be true.
+		 */
+		bool DoubleClickSelectType;
+
+		/*
+		 * If a campaign plays the introduction stored in its own movie archive, then this
+		 * flag will be true.
+		 */
+		bool CampaignIntroMovie;
+
+		/*
+		 * If in-game messages keep a transparent background while TextBackgroundColor is zero,
+		 * then this flag will be true. Clearing it draws palette index twelve, black, instead.
+		 */
+		bool TransparentMessageText;
+
+		/*
 		 * Frames between automatic saves of a game started from the menu, or zero for none.
 		 * A launch file's own interval takes its place.
 		 */
