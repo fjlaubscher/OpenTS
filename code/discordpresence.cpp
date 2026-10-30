@@ -46,10 +46,9 @@
 #endif
 
 
-// Public Discord application ID. 0 is the placeholder until the application is
-// registered. Override it with -DSILICONSUN_DISCORD_APPLICATION_ID=<id>.
+// Public Discord application ID. CMake overrides this with SILICONSUN_DISCORD_APPLICATION_ID.
 #ifndef SILICONSUN_DISCORD_APPLICATION_ID
-#define SILICONSUN_DISCORD_APPLICATION_ID 0
+#define SILICONSUN_DISCORD_APPLICATION_ID 1565832094893211698ULL
 #endif
 
 

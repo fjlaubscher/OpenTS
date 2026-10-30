@@ -12,6 +12,6 @@ when_omitted:
 
 While the menus stay up, the clock keeps running. Starting a scenario, restarting it, or loading a save starts that clock from the new start.
 
-`no` does not open a connection to Discord. A Discord client that is not running, and a build whose application ID is still `0`, also leave the game running with no message. Under Proton, the Linux Discord client usually cannot see the Windows build.
+`no` does not open a connection to Discord. A Discord client that is not running, and a build configured with application ID `0`, also leave the game running with no message. Under Proton, the Linux Discord client usually cannot see the Windows build.
 
 The key is read from `[siliconsun]` in `SUN.INI` at startup. No dialog offers it. Leaving the options menu writes the value currently in force.

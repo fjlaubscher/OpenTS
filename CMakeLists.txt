@@ -17,16 +17,17 @@ option(OPENTS_EXPERIMENTAL_CLANG_CL "Build with clang-cl using the MSVC ABI" OFF
 # state and move the pointer, and fail while another window holds the focus.
 option(OPENTS_DESKTOP_TESTS "Register the tests that need an otherwise idle desktop" OFF)
 
-# Public Discord application ID for Rich Presence. Not a secret. 0 is the placeholder:
-# the game then never contacts Discord, even when DiscordPresence=yes.
-set(SILICONSUN_DISCORD_APPLICATION_ID "0" CACHE STRING
+# Public Discord application ID for Rich Presence. Not a secret.
+# A configure that does not pass this uses 1565832094893211698.
+# 0 leaves presence off even when DiscordPresence=yes.
+set(SILICONSUN_DISCORD_APPLICATION_ID "1565832094893211698" CACHE STRING
     "Public Discord application ID. Not a secret. 0 leaves Rich Presence off.")
 if(NOT SILICONSUN_DISCORD_APPLICATION_ID MATCHES "^[0-9]+$")
     message(FATAL_ERROR
         "SILICONSUN_DISCORD_APPLICATION_ID must be the decimal application ID, or 0.")
 endif()
 if(SILICONSUN_DISCORD_APPLICATION_ID STREQUAL "0")
-    message(STATUS "Discord presence stays off until SILICONSUN_DISCORD_APPLICATION_ID is set.")
+    message(STATUS "Discord presence is off because SILICONSUN_DISCORD_APPLICATION_ID is 0.")
 else()
     message(STATUS "Discord presence application ID is ${SILICONSUN_DISCORD_APPLICATION_ID}.")
 endif()

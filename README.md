@@ -222,20 +222,16 @@ client's local IPC channel. There is no server, no Discord library in the
 build, and the application ID is public. The release zips do not add a
 runtime file for it.
 
-`SILICONSUN_DISCORD_APPLICATION_ID` is a CMake cache variable: a value CMake
-asks for once and remembers. `0` is the placeholder. With that value the game
-never contacts Discord, even when `DiscordPresence=yes`. After the application
-is registered, pass its ID the next time you configure:
+A normal build and a release build use application ID `1565832094893211698`.
+That number is the CMake cache variable `SILICONSUN_DISCORD_APPLICATION_ID`.
+CMake remembers a value you pass, so a later configure keeps it. A configure
+that does not pass the variable uses this ID. Set the variable to `0` and the
+game never contacts Discord, even when `DiscordPresence=yes`. A build
+directory configured while the variable was `0` keeps that cached value until
+you configure again.
 
-```bash
-cmake -S . -B build/macos -G Ninja \
-  -DCMAKE_BUILD_TYPE=Debug \
-  -DSILICONSUN_DISCORD_APPLICATION_ID=123456789012345678
-```
-
-On Windows, add the same `-D` to the CMake command. In the application's Rich
-Presence art assets, upload the logo and set its key to `logo`. Discord stores
-that key in lowercase.
+The large image is the Rich Presence art asset whose key is `logo`. Discord
+stores that key in lowercase.
 
 ## Building on Windows
 
