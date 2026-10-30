@@ -431,6 +431,7 @@ void Worker_Main(void)
 		unsigned nonce = 1;
 		while (!Stop.load()) {
 			Desired desired;
+			bool service_only = false;
 			{
 				std::unique_lock<std::mutex> lock(Mutex);
 				if (Stop.load()) {
@@ -444,15 +445,17 @@ void Worker_Main(void)
 					if (Stop.load()) {
 						break;
 					}
-					if (Pending.Generation == sent) {
-						lock.unlock();
-						if (Pipe_Is_Open(pipe) && !Service(pipe)) {
-							Close_Pipe(pipe);
-						}
-						continue;
-					}
+					service_only = Pending.Generation == sent && Pipe_Is_Open(pipe);
 				}
 				desired = Pending;
+			}
+
+			// With the activity current and the pipe closed, fall through to reopen and resend.
+			if (service_only) {
+				if (!Service(pipe)) {
+					Close_Pipe(pipe);
+				}
+				continue;
 			}
 
 			if (!Pipe_Is_Open(pipe)) {
