@@ -131,7 +131,7 @@ OptionsClass::OptionsClass(void) :
 	TextBackgroundColor(0),
 	DoubleClickSelectType(true),
 	CampaignIntroMovie(true),
-	NowPlaying(false),
+	NowPlaying(true),
 	PersistSkirmishSettings(true),
 	OverrideSkirmishDefaults(true),
 	SkirmishDefaultCredits(5000),
