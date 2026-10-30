@@ -16,4 +16,10 @@
 void Now_Playing_Set_View(Rect const & area);
 void Now_Playing_AI(void);
 void Now_Playing_Draw(void);
+void Now_Playing_Announce(void);
 bool Now_Playing_Key(int virtualkey, bool repeat);
+
+#if defined(__APPLE__)
+// enabled names this process as the one the system media keys control.
+void Now_Playing_System_Keys(bool enabled, char const * title);
+#endif

@@ -31,6 +31,7 @@
 #include "surface.h"
 #include "tactical.h"
 #include "theme.h"
+#include "win.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -48,6 +49,7 @@ int CoveredWidth;
 ThemeType Shown = THEME_NONE;
 bool Visible;
 bool WasScenario;
+bool Announce;
 
 
 int Line_Height(void)
@@ -134,9 +136,15 @@ void Now_Playing_Set_View(Rect const & area)
 
 void Now_Playing_AI(void)
 {
+	ThemeType const playing = Theme.What_Is_Playing();
+#if defined(__APPLE__)
+	Now_Playing_System_Keys(Options.NowPlaying && GameInFocus, playing >= THEME_FIRST ? Track_Name(playing) : NULL);
+#endif
+
 	bool active = Options.NowPlaying && ScenarioActive && Area.Width > 0 && Area.Height > 0;
 	if (!active) {
 		WasScenario = false;
+		Announce = false;
 		if (Visible) {
 			Visible = false;
 			Publish(0);
@@ -151,8 +159,8 @@ void Now_Playing_AI(void)
 		Text[0] = '\0';
 	}
 
-	ThemeType playing = Theme.What_Is_Playing();
-	if (playing != Shown) {
+	if (playing != Shown || Announce) {
+		Announce = false;
 		Shown = playing;
 		if (playing >= THEME_FIRST) {
 			Show(playing);
@@ -197,6 +205,12 @@ void Now_Playing_Draw(void)
 		y = Area.Y;
 	}
 	Simple_Text_Print(Text, *LogicalSurface, LogicalSurface->Get_Rect(), Point2D(Area.X, y), ColorSchemes[color], Options.TextBackgroundColor, STYLE, 1);
+}
+
+
+void Now_Playing_Announce(void)
+{
+	Announce = true;
 }
 
 
