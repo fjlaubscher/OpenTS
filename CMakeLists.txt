@@ -22,7 +22,7 @@ option(OPENTS_DESKTOP_TESTS "Register the tests that need an otherwise idle desk
 # 0 leaves presence off even when DiscordPresence=yes.
 set(SILICONSUN_DISCORD_APPLICATION_ID "1565832094893211698" CACHE STRING
     "Public Discord application ID. Not a secret. 0 leaves Rich Presence off.")
-if(NOT SILICONSUN_DISCORD_APPLICATION_ID MATCHES "^[0-9]+$")
+if(NOT SILICONSUN_DISCORD_APPLICATION_ID MATCHES "^(0|[1-9][0-9]*)$")
     message(FATAL_ERROR
         "SILICONSUN_DISCORD_APPLICATION_ID must be the decimal application ID, or 0.")
 endif()
