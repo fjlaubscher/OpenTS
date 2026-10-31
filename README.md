@@ -147,12 +147,11 @@ Victus both run this build. On the Deck, use Proton 11.
 ## macOS download
 
 A published release includes `siliconsun-<tag>-macos.zip`: `siliconsun.app` and
-the license notices. It is an arm64 application with an ad-hoc signature.
-Finder shows the siliconsun icon, and the Dock shows that icon while the game
-is running.
+the license notices. It is an arm64 application. Finder shows the siliconsun
+icon, and the Dock shows that icon while the game is running.
 
-Clear quarantine before the first open. Gatekeeper blocks a downloaded app
-until that attribute is removed.
+Gatekeeper opens a notarized app. It blocks an ad-hoc signed app until the
+quarantine attribute is removed:
 
 ```bash
 xattr -dr com.apple.quarantine siliconsun.app

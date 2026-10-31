@@ -83,20 +83,22 @@ jobs:
         run: cmake --build build/macos
 
       - name: Stage the client
+        env:
+          APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: |
           version=$(sed -n 's/^project(OpenTS VERSION \([0-9.]*\).*/\1/p' CMakeLists.txt)
           test -n "$version"
-          bash .github/scripts/stage-macos-app.sh \
+          bash .github/scripts/package-macos-release.sh \
             build/macos/bin/Game \
             build/macos/bin/ui \
             code/resources/app-icon/siliconsun.png \
             "$version" \
-            artifact
-          bash .github/scripts/stage-notices.sh artifact
-          # Zip on macOS so the executable bit and the ad-hoc signature travel with the bundle.
-          ( cd artifact && zip -r -y -X "${GITHUB_WORKSPACE}/siliconsun-macos.zip" \
-              siliconsun.app \
-              LICENSE.md THIRD_PARTY_NOTICES.md OpenTS_THIRD_PARTY_LICENSES )
+            artifact \
+            "${GITHUB_WORKSPACE}/siliconsun-macos.zip"
 
       - name: Upload the client
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

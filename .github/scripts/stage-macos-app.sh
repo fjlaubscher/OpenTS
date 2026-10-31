@@ -49,8 +49,15 @@ bash "$root/code/resources/app-icon/build-icns.sh" "$png" "$resources/siliconsun
 sed "s/__VERSION__/${version}/g" "$root/.github/macos/Info.plist.in" > "$app/Contents/Info.plist"
 plutil -lint "$app/Contents/Info.plist" >/dev/null
 
-codesign --force --sign - "$macos/Game"
-codesign --force --sign - "$app"
+# "-" is an ad-hoc signature. A Developer ID identity also gets a timestamp and the
+# hardened runtime, which notarization requires.
+identity=${CODESIGN_IDENTITY:--}
+sign_args=(--force --sign "$identity")
+if [[ "$identity" != "-" ]]; then
+	sign_args+=(--options runtime --timestamp)
+fi
+codesign "${sign_args[@]}" "$macos/Game"
+codesign "${sign_args[@]}" "$app"
 codesign --verify --strict "$app"
 
 echo "Staged $app"
